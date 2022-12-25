@@ -30,24 +30,4 @@ if len(pending_ids_list):
                 continue
             tg.send_message(expanded_url)
     tp.save_posted_ids(pending_ids_list)
-            
-
-
-# tweet_dict = {}
-
-# tweet_ids = set()
-
-# print(tweet_dict)
-    # with open("tweets.txt","w") as tweets_text_file:
-    #     tweets_text_file.write(str(tweet))
-    # tg.send_message(tweet)
-
-# with open("tweets.json", "a+") as json_tweets_file:
-#     json_tweets_file.write(json.dumps(tweet_dict))
-
-
-# with open("tweets.json","r") as tweets_file:
-#     myfile = json.load(tweets_file)
-
-#     for v in myfile:
-#         print(myfile[v)
+    
