@@ -7,7 +7,7 @@ def send_message(text_message):
     "text":f"{text_message}",
     }
 
-    with open("api_key.json") as api_key_file:
+    with open("storage/api_key.json") as api_key_file:
         data = json.load(api_key_file)
         api_key = data['api_key']
 

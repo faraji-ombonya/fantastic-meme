@@ -17,10 +17,10 @@ pending_ids_list = tp.get_pending_ids()
 if len(pending_ids_list):
     url = tt.create_url(pending_ids_list)
     json_response = tt.connnect_to_endpoint(url)
-    with open("new_tweets.json","w+") as tweets_json_file:
+    with open("storage/new_tweets.json","w+") as tweets_json_file:
         tweets_json_file.write(json.dumps(json_response, indent=4, sort_keys=True))
 
-    with open("new_tweets.json") as file:
+    with open("storage/new_tweets.json") as file:
         data = json.load(file)
 
         for item in data["data"]:

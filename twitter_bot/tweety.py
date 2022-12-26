@@ -22,7 +22,7 @@ def bearer_oauth(r):
     '''
     Method required by bearer token authentication.
     '''
-    with open("bearer_token.json") as bearer_token_file:
+    with open("storage/bearer_token.json") as bearer_token_file:
         data = json.load(bearer_token_file)
         bearer_token = data["bearer_token"]
 
@@ -41,16 +41,3 @@ def connnect_to_endpoint(url):
             )
         )
     return response.json()
-
-
-# def main():
-#     url = create_url()
-#     json_response = connnect_to_endpoint(url)
-#     with open("new_tweets.json","w+") as tweets_json_file:
-#         tweets_json_file.write(json.dumps(json_response, indent=4, sort_keys=True))
-
-
-# if __name__ == "__main__":
-#     main()
-
-# print(create_url())
