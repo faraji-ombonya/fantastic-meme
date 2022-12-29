@@ -1,21 +1,43 @@
 import feedparser
 import json
 
-def get_content():
-    d = feedparser.parse("storage/feed.xml")
 
-    with open("storage/feed.json","w") as file:
-        file.write(json.dumps(d, indent=4, sort_keys=True))
+def fetch_content_standard():
+    '''Get content from standard rss feed
+    
+    Returns:
+        None
+    '''
 
-    with open("storage/feed.json", "r") as file:
+    with open("standard_digital_rss.json") as file:
+        data = json.load(file)
+    sports_url = data['data']['sports']
+
+    d = feedparser.parse(sports_url)
+
+    with open("feed.json", "w") as file:
+        file.write(json.dumps(d, indent=4, sort_keys=True ))
+
+    return None
+
+    
+
+def get_posts(list_ids):
+    '''Get posts with matching IDs from the list
+    
+    Args:
+        list_ids: list of ids to fetch posts
+
+    Return:
+        A list of posts
+    '''
+    posts = []
+
+    with open("feed.json") as file:
         data = json.load(file)
 
-    content = []
     for item in data['entries']:
-        title =item['title']
-        summary = item['summary']
-        author = item['author']
-        link = item['link']
+        if item['id'] in list_ids:
+            posts.append(item['link'])
 
-        content.append(f"{title}\n {summary}\n {author} \n{link}")
-    return content
+    return posts
