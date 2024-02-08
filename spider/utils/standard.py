@@ -31,3 +31,11 @@ class Standard():
         Post.objects.bulk_create(
             [Post(**post) for post in posts],
             ignore_conflicts=True)
+        
+    def transform_standard_telegram(post):
+        content = post.get('content')
+        title = content.get('title')
+        link = content.get('link')
+        summary = content.get('summary')
+
+        return f"{title}\n{link}\n{summary}"

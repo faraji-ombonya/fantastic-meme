@@ -13,3 +13,6 @@ class Post(models.Model):
     def __str__(self):
         return self.title
     
+    def mark_as_posted(self):
+        self.is_posted = True
+        self.save()
