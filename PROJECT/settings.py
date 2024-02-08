@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -123,3 +125,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Telegram
+TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID', None)
+TELEGRAM_API_KEY = config('TELEGRAM_API_KEY', None)
+TELEGRAM_BASE_URL = config('TELEGRAM_BASE_URL', None)

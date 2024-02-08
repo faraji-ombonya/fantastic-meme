@@ -1,13 +1,25 @@
 import requests
 import json
 
+from django.conf import settings
+
+
 class Telegram():
     def __init__(self):
-        self.chat_id = None
-        self.base_url = None
-        self.api_key = None
+        self.chat_id = settings.TELEGRAM_CHAT_ID
+        self.base_url = settings.TELEGRAM_BASE_URL
+        self.api_key = settings.TELEGRAM_API_KEY
 
     def send_message(self, message):
+        """
+        Send message to a telegram chat.
+
+        Args:
+            message (str): The message to send.
+
+        Returns:
+            bool: True if the message was sent successfully, False otherwise.
+        """
         payload = {
             "chat_id": self.chat_id,
             "text": message,
