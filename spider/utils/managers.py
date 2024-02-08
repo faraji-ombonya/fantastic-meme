@@ -1,4 +1,5 @@
 import time
+import random
 from spider.models import Post
 from spider.utils.standard import Standard
 from spider.utils.telegram import Telegram
@@ -23,3 +24,8 @@ class SpiderManager():
                 post.mark_as_posted()
             post.save()
             time.sleep(2)
+
+    def run_forever(self):
+        while True:
+            self.run()
+            time.sleep(random.randint(60, 21600))
