@@ -32,8 +32,8 @@ class Standard():
             [Post(**post) for post in posts],
             ignore_conflicts=True)
         
-    def transform_standard_telegram(post):
-        content = post.get('content')
+    def transform_standard_telegram(self, post):
+        content = post.content
         title = content.get('title')
         link = content.get('link')
         summary = content.get('summary')
