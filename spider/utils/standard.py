@@ -21,7 +21,7 @@ class Standard():
                 post['content'] = entry
                 post['slug'] = entry.get('id')
 
-                posts.append(post)
+                posts.insert(0, post)
 
 
         print(posts)
