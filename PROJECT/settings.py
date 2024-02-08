@@ -131,3 +131,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID', None)
 TELEGRAM_API_KEY = config('TELEGRAM_API_KEY', None)
 TELEGRAM_BASE_URL = config('TELEGRAM_BASE_URL', None)
+
+# Standard
+STANDARD_SPORTS_URL = config('STANDARD_SPORTS_URL', None)
