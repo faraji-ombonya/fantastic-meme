@@ -29,6 +29,7 @@ class Telegram():
 
         try:
             response = requests.get(url, params=payload)
+            print(response.json())
             return response.status_code == 200
         except:
             print("Error sending message to Telegram")
