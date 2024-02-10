@@ -7,9 +7,7 @@ from django.conf import settings
 from spider.models import Post
 from spider.utils.telegram import Telegram
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Star():
     def __init__(self):

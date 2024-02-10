@@ -6,9 +6,7 @@ from spider.utils.standard import Standard
 from spider.utils.star import Star
 from spider.utils.telegram import Telegram
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s')
 
 class SpiderManager():
     def __init__(self):

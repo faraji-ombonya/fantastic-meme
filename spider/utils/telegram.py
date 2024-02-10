@@ -4,9 +4,7 @@ import logging
 
 from django.conf import settings
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s -%(levelname)s - %(message)s')
+logging.basicConfig(format='%(asctime)s -%(levelname)s - %(message)s')
 
 class Telegram():
     def __init__(self):
