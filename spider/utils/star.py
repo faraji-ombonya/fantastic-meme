@@ -68,9 +68,11 @@ class Star():
                 if article_section_a:
                     entry['category'] = article_section_a.contents[0]
 
-            entries.append(entry)
-            pprint(entry)
-            print()
+            if entry.get('synopsis'):
+                entries.append(entry)
+
+                pprint(entry)
+                print()
 
       
         return entries
@@ -90,6 +92,7 @@ class Star():
                 post = {}
                 post['slug'] = entry.get('link')
                 post['content'] = entry
+                post['source'] = Post.STAR
 
                 posts.insert(0, post)
 
@@ -106,10 +109,10 @@ class Star():
         content = post.content
         title = content.get('title')
         link = content.get('link')
-        summary = content.get('synopsis')
-        author = content.get('author')
-        category = content.get('category')
-        source = content.get('source')
+        # summary = content.get('synopsis')
+        # author = content.get('author')
+        # category = content.get('category')
+        # source = content.get('source')
 
-        return f"{title}\n{link}\n{summary}\n[{source} | {author} | {category}]"
+        return f"{title}\n{link}"
     

@@ -15,7 +15,7 @@ class SpiderManager():
         posts = standard.get_posts()
         standard.save_posts(posts)
 
-        pending_posts = Post.objects.filter(is_posted=False)
+        pending_posts = Post.objects.filter(is_posted=False, source=Post.STANDARD)
 
         for post in pending_posts:
             telegram = Telegram()
@@ -31,7 +31,7 @@ class SpiderManager():
         posts = star.get_posts(entries)
         star.save_posts(posts)
 
-        pending_posts = Post.objects.filter(is_posted=False)
+        pending_posts = Post.objects.filter(is_posted=False, source=Post.STAR)
 
         for post in pending_posts:
             telegram = Telegram()
