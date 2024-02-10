@@ -1,23 +1,30 @@
 import time
 import random
+import logging
 from spider.models import Post
 from spider.utils.standard import Standard
 from spider.utils.star import Star
 from spider.utils.telegram import Telegram
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s')
 
 class SpiderManager():
     def __init__(self):
         pass
 
     def run_standard(self):
+        logging.info("Spider Manager running The Standard.")
         standard = Standard()
-        posts = standard.get_posts()
+        entries = standard.get_entries()
+        posts = standard.get_posts(entries)
         standard.save_posts(posts)
 
         pending_posts = Post.objects.filter(is_posted=False, source=Post.STANDARD)
 
         if not pending_posts:
+            logging.warning("There are no pending posts from The Standard.")
             return
         
         telegram = Telegram()
@@ -37,6 +44,7 @@ class SpiderManager():
         pending_posts = Post.objects.filter(is_posted=False, source=Post.STAR)
 
         if not pending_posts:
+            logging.warning("There are no pending posts from The Star")
             return
         
         telegram = Telegram()
@@ -54,6 +62,7 @@ class SpiderManager():
         self.run_star()
 
     def run_forever(self):
+        logging.info("Running in forever mode.")
         while True:
             self.run()
             time.sleep(random.randint(60, 21600))
