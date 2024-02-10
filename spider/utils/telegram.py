@@ -1,3 +1,4 @@
+import base64
 import requests
 import json
 
@@ -35,3 +36,26 @@ class Telegram():
             print("Error sending message to Telegram")
             return False
         
+    def send_base64_image(self, base64_data, caption=None):
+
+        base64_data = base64_data.replace("data:image/jpg;base64,", "")
+        image_data = base64.b64decode(base64_data)
+        with open("image.jpg", "wb") as f:
+            f.write(image_data)
+            
+        with open("image.jpg", "rb") as image:
+            files = {"photo": image}
+            payload = {"chat_id": self.chat_id}
+
+            if caption:
+                payload["caption"] = caption
+
+            url = f"{self.base_url}/bot{self.api_key}/sendPhoto"
+            response = requests.post(url, params=payload, files=files)
+            print(response.json())
+            if response.status_code == 200:
+                print("Image sent successfully.")
+                return True
+            else:
+                print("Failed to send image.")
+                return False
