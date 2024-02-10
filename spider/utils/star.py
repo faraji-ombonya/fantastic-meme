@@ -7,7 +7,9 @@ from django.conf import settings
 from spider.models import Post
 from spider.utils.telegram import Telegram
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Star():
     def __init__(self):
@@ -24,8 +26,8 @@ class Star():
         ]
 
     def get_entries(self):
+        logging.info("Getting entries from the Star.")
         entries = []
-
         for url in self.urls:
             if url is None:
                 continue

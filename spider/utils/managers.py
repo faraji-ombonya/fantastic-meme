@@ -6,7 +6,9 @@ from spider.utils.standard import Standard
 from spider.utils.star import Star
 from spider.utils.telegram import Telegram
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s')
 
 class SpiderManager():
     def __init__(self):
@@ -32,8 +34,11 @@ class SpiderManager():
             if result:
                 post.mark_as_posted()
             time.sleep(random.randint(5, 10))
+        logging.info("Done posting posts from The Standard.")
+        return
 
     def run_star(self):
+        logging.info("Spider Manager running The Star.")
         star = Star()
         entries = star.get_entries()
         posts = star.get_posts(entries)
@@ -52,6 +57,7 @@ class SpiderManager():
             if result:
                 post.mark_as_posted()
             time.sleep(random.randint(5, 10))
+        logging.info("Done posting from The Star.")
         return
 
     def run(self):
@@ -63,4 +69,5 @@ class SpiderManager():
         logging.info("Running in forever mode.")
         while True:
             self.run()
+            logging.info("Done fetching and posting posts. Going to sleep for a while.")
             time.sleep(random.randint(60, 21600))

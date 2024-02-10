@@ -4,7 +4,9 @@ import logging
 from django.conf import settings
 from spider.models import Post
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s')
 
 class Standard():
     def __init__(self):
