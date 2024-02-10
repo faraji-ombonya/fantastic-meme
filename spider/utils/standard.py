@@ -20,6 +20,7 @@ class Standard():
                 post = {}
                 post['content'] = entry
                 post['slug'] = entry.get('id')
+                post['source'] = Post.STANDARD
 
                 posts.insert(0, post)
 
@@ -36,6 +37,6 @@ class Standard():
         content = post.content
         title = content.get('title')
         link = content.get('link')
-        summary = content.get('summary')
+        # summary = content.get('summary')
 
-        return f"{title}\n{link}\n{summary}"
+        return f"{title}\n{link}\n"
