@@ -17,8 +17,11 @@ class SpiderManager():
 
         pending_posts = Post.objects.filter(is_posted=False, source=Post.STANDARD)
 
+        if not pending_posts:
+            return
+        
+        telegram = Telegram()
         for post in pending_posts:
-            telegram = Telegram()
             message = standard.transform_standard_telegram(post)
             result = telegram.send_message(message)
             if result:
@@ -33,13 +36,17 @@ class SpiderManager():
 
         pending_posts = Post.objects.filter(is_posted=False, source=Post.STAR)
 
+        if not pending_posts:
+            return
+        
+        telegram = Telegram()
         for post in pending_posts:
-            telegram = Telegram()
             message = star.transform_star_telegram(post)
             result = telegram.send_message(message)
             if result:
                 post.mark_as_posted()
             time.sleep(2)
+        return
 
     def run(self):
         self.run_standard()
