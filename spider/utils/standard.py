@@ -13,7 +13,7 @@ class Standard():
         self.standard_sports_url = settings.STANDARD_SPORTS_URL
 
     def get_entries(self):
-        logging.info("Getting messages from The Standard RSS Feed.")
+        logging.info(f"Getting entries from The Standard RSS feed.")
         try:
             feed = feedparser.parse(self.standard_sports_url)
             return feed.get("entries")

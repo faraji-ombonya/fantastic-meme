@@ -22,7 +22,12 @@ class Telegram():
         url = f"{self.base_url}/bot{self.api_key}/sendMessage"
 
         try:
-            logging.info(f"Sending message: {message}")
+            snippet = f"{message[:32]} ..."
+        except:
+            snippet = message
+
+        try:
+            logging.info(f"Sending message: {snippet}")
             response = requests.get(url, params=payload)
 
             if response.status_code == 200:

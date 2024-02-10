@@ -69,5 +69,5 @@ class SpiderManager():
         logging.info("Running in forever mode.")
         while True:
             self.run()
-            logging.info("Done fetching and posting posts. Going to sleep for a while.")
+            logging.info("Done fetching and sharing posts. Going to sleep for a while.")
             time.sleep(random.randint(60, 21600))
