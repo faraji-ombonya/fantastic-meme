@@ -26,7 +26,7 @@ class SpiderManager():
             result = telegram.send_message(message)
             if result:
                 post.mark_as_posted()
-            time.sleep(2)
+            time.sleep(random.randint(5, 10))
 
     def run_star(self):
         star = Star()
@@ -45,12 +45,12 @@ class SpiderManager():
             result = telegram.send_message(message)
             if result:
                 post.mark_as_posted()
-            time.sleep(2)
+            time.sleep(random.randint(5, 10))
         return
 
     def run(self):
         self.run_standard()
-        time.sleep(random.randint(5, 10))
+        time.sleep(random.randint(15, 20))
         self.run_star()
 
     def run_forever(self):
