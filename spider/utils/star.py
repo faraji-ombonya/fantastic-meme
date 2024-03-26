@@ -7,9 +7,12 @@ from django.conf import settings
 from spider.models import Post
 from spider.utils.telegram import Telegram
 
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s')
+
+logger = logging.getLogger(__name__)
 
 class Star():
     def __init__(self):
@@ -25,23 +28,35 @@ class Star():
             settings.STAR_SPORTS_BASKETBALL_URL,
         ]
 
-    def get_entries(self):
-        logging.info("Getting entries from the Star.")
+        self.politics_urls = [
+            settings.STAR_POLITICS_URL,
+        ]
+
+    
+    def get_sports_entries(self):
+        return self.get_entries(self.urls)
+
+    def get_politics_entries(self):
+        return self.get_entries(self.politics_urls)
+    
+
+    def get_entries(self, urls):
+        logger.info("Getting entries from the Star.")
         entries = []
-        for url in self.urls:
+        for url in urls:
             if url is None:
                 continue
 
             try:
-                logging.info(f"Getting posts from {url}")
+                logger.info(f"Getting posts from {url}")
                 response = requests.get(url)
             except:
-                logging.error(f"Failed to get posts from {url}")
+                logger.error(f"Failed to get posts from {url}")
                 continue
 
             soup = BeautifulSoup(response.text, 'html.parser')
             if not soup:
-                logging.error("Failed to parse response")
+                logger.error("Failed to parse response")
                 continue
 
             articles = soup.find_all('div', 'section-article')
@@ -118,7 +133,7 @@ class Star():
             Post.objects.bulk_create(
                 [Post(**post) for post in posts], ignore_conflicts=True)
         except:
-            logging.error("An error occurred while saving posts.")
+            logger.error("An error occurred while saving posts.")
             return False
             
     def transform_star_telegram(self, post):
@@ -129,3 +144,16 @@ class Star():
         link = content.get('link')
         return f"{title}\n{link}"
     
+    def get_pending_posts(self):
+        pending_posts = Post.objects.filter(source=Post.STAR, is_posted=False)
+
+        if not pending_posts:
+            raise NoPendingPostsError
+
+        return Post.objects.filter(source=Post.STAR, is_posted=False)
+    
+
+
+class NoPendingPostsError(Exception):
+    pass
+
