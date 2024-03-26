@@ -59,6 +59,50 @@ class SpiderManager():
             time.sleep(random.randint(5, 10))
         logging.info("Done posting from The Star.")
         return
+    
+    def run_star_sports():
+        logging.info("Spider Manager running The Star.")
+        star = Star()
+        entries = star.get_entries()
+        posts = star.get_posts(entries)
+        star.save_posts(posts)
+
+        pending_posts = Post.objects.filter(is_posted=False, source=Post.STAR)
+
+        if not pending_posts:
+            logging.warning("There are no pending posts from The Star")
+            return
+        
+        telegram = Telegram()
+        for post in pending_posts:
+            message = star.transform_star_telegram(post)
+            result = telegram.send_message(message, Telegram.SPORTS_KENYA)
+            if result:
+                post.mark_as_posted()
+            time.sleep(random.randint(5, 10))
+        logging.info("Done posting from The Star.")
+
+    def run_star_politics(self):
+        logging.info("Spider Manager running The Star.")
+        star = Star()
+        entries = star.get_politics_entries()
+        posts = star.get_posts(entries)
+        star.save_posts(posts)
+
+        pending_posts = Post.objects.filter(is_posted=False, source=Post.STAR)
+
+        if not pending_posts:
+            logging.warning("There are no pending posts from The Star")
+            return
+        
+        telegram = Telegram()
+        for post in pending_posts:
+            message = star.transform_star_telegram(post)
+            result = telegram.send_message(message, Telegram.KENYAN_POLITICS)
+            if result:
+                post.mark_as_posted()
+            time.sleep(random.randint(5, 10))
+        logging.info("Done posting from The Star.")
 
     def run(self):
         self.run_standard()
@@ -70,4 +114,4 @@ class SpiderManager():
         while True:
             self.run()
             logging.info("Done fetching and sharing posts. Going to sleep for a while.")
-            time.sleep(random.randint(60, 21600))
+            time.sleep(random.randint(600, 3600))
