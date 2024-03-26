@@ -63,25 +63,24 @@ class SpiderManager():
         return
     
     def run_star_sports(self):
-        logger.info("Spider Manager running The Star.")
-        star = Star()
-        entries = star.get_entries()
-        posts = star.get_posts(entries)
-        star.save_posts(posts)
-        pending_posts = star.get_pending_posts()
-
-        if not pending_posts:
+        try:
+            logger.info("Spider Manager running The Star.")
+            star = Star()
+            entries = star.get_sports_entries()
+            posts = star.get_posts(entries)
+            star.save_posts(posts)
+            pending_posts = star.get_pending_posts()
+ 
+            telegram = Telegram()
+            for post in pending_posts:
+                message = star.transform_star_telegram(post)
+                result = telegram.send_message(message, Telegram.SPORTS_KENYA)
+                if result:
+                    post.mark_as_posted()
+                time.sleep(random.randint(5, 10))
+            logger.info("Done posting from The Star.")
+        except NoPendingPostsError:
             logger.warning("There are no pending posts from The Star")
-            return
-        
-        telegram = Telegram()
-        for post in pending_posts:
-            message = star.transform_star_telegram(post)
-            result = telegram.send_message(message, Telegram.SPORTS_KENYA)
-            if result:
-                post.mark_as_posted()
-            time.sleep(random.randint(5, 10))
-        logger.info("Done posting from The Star.")
 
     def run_star_politics(self):
         try:
@@ -91,7 +90,6 @@ class SpiderManager():
             posts = star.get_posts(entries)
             star.save_posts(posts)
             pending_posts = star.get_pending_posts()
-
         
             telegram = Telegram()
             for post in pending_posts:
