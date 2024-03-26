@@ -9,14 +9,22 @@ logging.basicConfig(
     format='%(asctime)s -%(levelname)s - %(message)s')
 
 class Telegram():
+    SPORTS_KENYA = "sports-kenya"
+    KENYAN_POLITICS = "kenyan-politics"    
+
+
     def __init__(self):
         self.chat_id = settings.TELEGRAM_CHAT_ID
         self.base_url = settings.TELEGRAM_BASE_URL
         self.api_key = settings.TELEGRAM_API_KEY
+        self.chat_ids = {
+            self.SPORTS_KENYA: settings.TELEGRAM_SPORTS_KENYA_CHAT_ID,
+            self.KENYAN_POLITICS: settings.TELEGRAM_KENYAN_POLITICS_CHAT_ID,
+        }
 
-    def send_message(self, message):
+    def send_message(self, message, channel):
         payload = {
-            "chat_id": self.chat_id,
+            "chat_id": self.chat_ids[channel],
             "text": message}
 
         url = f"{self.base_url}/bot{self.api_key}/sendMessage"
