@@ -7,6 +7,7 @@ from django.conf import settings
 from spider.models import Post
 from spider.utils.telegram import Telegram
 
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -143,3 +144,16 @@ class Star():
         link = content.get('link')
         return f"{title}\n{link}"
     
+    def get_pending_posts(self):
+        pending_posts = Post.objects.filter(source=Post.STAR, is_posted=False)
+
+        if not pending_posts:
+            raise NoPendingPostsError
+
+        return Post.objects.filter(source=Post.STAR, is_posted=False)
+    
+
+
+class NoPendingPostsError(Exception):
+    pass
+
