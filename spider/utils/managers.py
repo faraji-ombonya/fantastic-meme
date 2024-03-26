@@ -32,7 +32,7 @@ class SpiderManager():
         telegram = Telegram()
         for post in pending_posts:
             message = standard.transform_standard_telegram(post)
-            result = telegram.send_message(message)
+            result = telegram.send_message(message, Telegram.SPORTS_KENYA)
             if result:
                 post.mark_as_posted()
             time.sleep(random.randint(5, 10))
