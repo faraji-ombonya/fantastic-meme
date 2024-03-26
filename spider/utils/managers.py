@@ -84,7 +84,6 @@ class SpiderManager():
         logger.info("Done posting from The Star.")
 
     def run_star_politics(self):
-
         try:
             logger.info("Spider Manager running The Star.")
             star = Star()
@@ -105,13 +104,12 @@ class SpiderManager():
         except NoPendingPostsError:
             logger.warning("There are no pending posts from The Star")
 
-
-
-
     def run(self):
         self.run_standard()
         time.sleep(random.randint(15, 20))
-        self.run_star()
+        self.run_star_sports()
+        time.sleep(random.randint(15, 20))
+        self.run_star_politics()
 
     def run_forever(self):
         logger.info("Running in forever mode.")
