@@ -48,6 +48,13 @@ class Telegram():
             logging.error(f"Failed to send message to telegram.")
             return False
         
+
+    def send_messages(self, messages, chanel):
+        for message in messages:
+            self.send_message(message, chanel)
+        return True
+    
+
     def send_base64_image(self, base64_data, caption=None):
         base64_data = base64_data.replace("data:image/jpg;base64,", "")
         image_data = base64.b64decode(base64_data)

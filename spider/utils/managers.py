@@ -3,7 +3,13 @@ import random
 import logging
 from spider.models import Post
 from spider.utils.standard import Standard
-from spider.utils.star import Star, NoPendingPostsError
+from spider.utils.star import (
+    Star, 
+    NoPendingPostsError, 
+    UnableToTransformPostError, 
+    NoPostsFoundError,
+    UnableToSavePostsError,
+)
 from spider.utils.telegram import Telegram
 
 logging.basicConfig(
@@ -115,3 +121,41 @@ class SpiderManager():
             self.run()
             logger.info("Done fetching and sharing posts. Going to sleep for a while.")
             time.sleep(random.randint(600, 3600))
+
+class StarManager():
+    POLITICS = 'politics'
+    SPORTS = 'sports'
+
+    def __init__(self):
+        pass
+    
+    def run(self):
+        try:
+            logger.info("Spider Manager running The Star.")
+            star = Star()
+            entries = star.get_entries()
+            posts = star.get_posts(entries)
+            star.save_posts(posts)
+            pending_posts = star.get_pending_posts()
+            transformed_posts = star.transform_posts(pending_posts)
+ 
+            telegram = Telegram()
+            for post in pending_posts:
+                message = star.transform_star_telegram(post)
+                result = telegram.send_message(message, Telegram.SPORTS_KENYA)
+                if result:
+                    post.mark_as_posted()
+                time.sleep(random.randint(5, 10))
+            logger.info("Done posting from The Star.")
+        
+        except NoPendingPostsError:
+            logger.warning("There are no pending posts from The Star")
+
+        except UnableToTransformPostError:
+            logger.warning("Unable to transform post from The Star")
+
+        except NoPostsFoundError:
+            logger.warning("No posts found from The Star")
+
+        except UnableToSavePostsError:
+            logger.warning("Unable to save posts from The Star")

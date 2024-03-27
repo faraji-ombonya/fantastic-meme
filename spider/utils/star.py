@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 
 from django.conf import settings
 from spider.models import Post
-from spider.utils.telegram import Telegram
 
 
 logging.basicConfig(
@@ -115,7 +114,7 @@ class Star():
         
     def get_posts(self, entries):
         if not entries:
-            return False
+            raise NoPostsFoundError
 
         posts = []
         for entry in entries:
@@ -138,11 +137,20 @@ class Star():
             
     def transform_star_telegram(self, post):
         if not post:
-            return False
+            raise UnableToTransformPostError
         content = post.content
         title = content.get('title')
         link = content.get('link')
         return f"{title}\n{link}"
+
+    def transform_posts(self, posts):
+        if not posts:
+            raise NoPostsFoundError
+        transformed_posts = []
+        for post in posts:
+            transformed_post = self.transform_star_telegram(post)
+            transformed_posts.append(transformed_post)
+        return transformed_posts
     
     def get_pending_posts(self):
         pending_posts = Post.objects.filter(source=Post.STAR, is_posted=False)
@@ -157,3 +165,11 @@ class Star():
 class NoPendingPostsError(Exception):
     pass
 
+class UnableToTransformPostError(Exception):
+    pass
+
+class NoPostsFoundError(Exception):
+    pass
+
+class UnableToSavePostsError(Exception):
+    pass
