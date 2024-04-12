@@ -57,7 +57,72 @@ class Star():
     def get_politics_entries(self):
         return self.get_entries(self.politics_urls)
     
-    # def extract(self, url):
+    def extract_v2(self, url):
+        response = requests.get(url)
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        if not soup:
+            logger.error("Failed to parse response")
+
+        articles = soup.find_all('div', 'section-article')
+        base = self.star_base_url
+        entries = []
+        for article in articles:
+            entry = {}
+            entry['source'] = "The Star"
+
+            # title
+            entry['title'] = None
+            title = article.find('h3')
+            if title:
+                entry['title'] = title.contents[0]
+
+             # link
+            entry['link'] = None
+            article_link = article.find('a').get("href")
+            if article_link:
+                entry['link'] = f"{base}{article_link}"
+
+            # synopsis
+            entry['synopsis'] = None
+            article_synopsis = article.find('p', 'article-synopsis')
+            if article_synopsis:
+                entry['synopsis'] = article_synopsis.contents[0]
+
+            # author
+            entry['author'] = None
+            span_article_author = article.find('span', 'article-author')
+            if span_article_author:
+                author = span_article_author.contents[0]
+                if author:
+                    entry['author'] = span_article_author.contents[0]
+                    author_span_link = span_article_author.a
+                    if author_span_link:
+                        entry['author'] = author_span_link.contents[0]
+
+            # category
+            entry['category'] = None
+            article_section = article.find('span', 'article-section')
+            if article_section:
+                article_section_a = article_section.a
+                if article_section_a:
+                    entry['category'] = article_section_a.contents[0]
+
+            if entry.get('synopsis'):
+                entries.append(entry)
+
+        return entries
+    
+    def extract_bulk_v2(self, urls):
+        bulk_entries = []
+        for url in urls:
+            entries = self.extract_v2(url)
+            bulk_entries.extend(entries)
+        return bulk_entries
+
+
+
+
 
 
 
