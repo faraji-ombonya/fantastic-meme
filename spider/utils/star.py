@@ -360,9 +360,30 @@ class Star():
         for entry in entries:
             post = self.transform_v2(entry)
             posts.insert(0, post)
+        return posts
 
+    def load_v2(self, post):
+        Post.objects.create(post)
 
+    def load_bulk_v2(self, posts):
+        Post.objects.bulk_create(
+            [Post(**post) for post in posts], ignore_conflicts=True)
+        
+    def get_posts(self):
+        return Post.objects.filter(source=Post.STAR, is_posted=False)
+        
+    def to_telegram_post(self, post):
+        content = post.content
+        title = content.get('title')
+        link = content.get('link')
+        return f"{title}\n{link}"
 
+    def to_telegram_post_bulk(self, posts):
+        telegram_posts = []
+        for post in posts:
+            telegram_post = self.to_telegram_post(post)
+            telegram_posts.append(telegram_post)
+        return telegram_posts
 
 
 
