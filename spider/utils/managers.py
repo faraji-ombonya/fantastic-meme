@@ -133,9 +133,10 @@ class StarManager():
         try:
             logger.info("Spider Manager running The Star.")
             star = Star()
-            entries = star.get_entries()
-            posts = star.get_posts(entries)
-            star.save_posts(posts)
+            entries = star.extract(Star.POLITICS)
+            posts = star.transform(entries)
+            star.load(posts)
+            
             pending_posts = star.get_pending_posts()
             transformed_posts = star.transform_posts(pending_posts)
  
