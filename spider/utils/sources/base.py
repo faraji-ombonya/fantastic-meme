@@ -15,7 +15,8 @@ class BaseSource():
         return Post.objects.filter(source=source, is_posted=False)
     
     def acknowledge_post(self, telegram_post):
-        post = Post.objects.get(id=telegram_post.id)
+        slug = telegram_post.get("slug")
+        post = Post.objects.get(slug=slug)
         post.mark_as_posted()
         return
     

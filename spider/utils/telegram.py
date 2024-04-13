@@ -22,7 +22,8 @@ class Telegram():
         }
         self.url = f"{self.base_url}/bot{self.api_key}/sendMessage"
 
-    def send_message(self, message, channel):
+    def send_post(self, post, channel):
+        message = post.get("message")
         payload = {
             "chat_id": self.chat_ids[channel],
             "text": message
@@ -35,7 +36,7 @@ class Telegram():
             response = requests.get(self.url, params=payload)
             if response.status_code == 200:
                 logging.info("Message sent successfully.")
-                return message
+                return post
             else:
                 logging.info(f"An error occurred. Status: {response.status_code}")
                 return False
@@ -43,14 +44,14 @@ class Telegram():
             logging.error(f"Failed to send message to telegram.")
             return False
         
-    def send_messages(self, messages, chanel):
-        sent_messages = []
-        for message in messages:
-            sent_message = self.send_message(message, chanel)
-            if not sent_message:
+    def send_posts(self, posts, chanel):
+        sent_posts = []
+        for post in posts:
+            sent_post = self.send_post(post, chanel)
+            if not sent_post:
                 continue
-            sent_messages.append(sent_message)
-        return sent_messages
+            sent_posts.append(sent_post)
+        return sent_posts
     
     def send_base64_image(self, base64_data, caption=None):
         base64_data = base64_data.replace("data:image/jpg;base64,", "")

@@ -376,7 +376,7 @@ class Star(BaseSource):
         
         telegram_post = {
             "message": f"{title}\n{link}",
-            "id": post.id
+            "slug": post.slug
         }
 
         return telegram_post
