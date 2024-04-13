@@ -107,7 +107,7 @@ class Star(BaseSource):
     def extract_bulk(self, urls):
         bulk_entries = []
         for url in urls:
-            entries = self.extract_v2(url)
+            entries = self.extract(url)
             bulk_entries.extend(entries)
         return bulk_entries
 
@@ -121,26 +121,9 @@ class Star(BaseSource):
     def transform_bulk(self, entries):
         posts = []
         for entry in entries:
-            post = self.transform_v2(entry)
+            post = self.transform(entry)
             posts.insert(0, post)
         return posts
     
-    def to_telegram_post(self, post):
-        content = post.content
-        title = content.get('title')
-        link = content.get('link')
-        
-        telegram_post = {
-            "message": f"{title}\n{link}",
-            "slug": post.slug
-        }
 
-        return telegram_post
-
-    def to_telegram_posts(self, posts):
-        telegram_posts = []
-        for post in posts:
-            telegram_post = self.to_telegram_post(post)
-            telegram_posts.append(telegram_post)
-        return telegram_posts
 

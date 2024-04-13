@@ -1,6 +1,8 @@
 import base64
 import requests
 import logging
+import time
+import random
 
 from django.conf import settings
 
@@ -13,7 +15,7 @@ class Telegram():
     KENYAN_POLITICS = "kenyan-politics"
     TEST_CHANNEL = "test-channel"    
 
-    def __init__(self):
+    def __init__(self, rate_limited=True):
         self.chat_id = settings.TELEGRAM_CHAT_ID
         self.base_url = settings.TELEGRAM_BASE_URL
         self.api_key = settings.TELEGRAM_API_KEY
@@ -23,6 +25,7 @@ class Telegram():
             self.TEST_CHANNEL: settings.TELEGRAM_TEST_CHANNEL_CHAT_ID
         }
         self.url = f"{self.base_url}/bot{self.api_key}/sendMessage"
+        self.rate_limited = rate_limited
 
     def send_post(self, post, channel):
         message = post.get("message")
@@ -53,6 +56,9 @@ class Telegram():
             if not sent_post:
                 continue
             sent_posts.append(sent_post)
+
+            if self.rate_limited:
+                time.sleep(random.randint(2, 5))
         return sent_posts
     
     def send_base64_image(self, base64_data, caption=None):
