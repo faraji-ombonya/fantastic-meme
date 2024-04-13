@@ -29,10 +29,7 @@ class Telegram():
 
         url = f"{self.base_url}/bot{self.api_key}/sendMessage"
 
-        try:
-            snippet = f"{message[:32]} ..."
-        except:
-            snippet = message
+        snippet = f"{message[:32]}..." if len(message) > 32 else message
 
         try:
             logging.info(f"Sending message: {snippet}")
@@ -48,13 +45,11 @@ class Telegram():
             logging.error(f"Failed to send message to telegram.")
             return False
         
-
     def send_messages(self, messages, chanel):
         for message in messages:
             self.send_message(message, chanel)
         return True
     
-
     def send_base64_image(self, base64_data, caption=None):
         base64_data = base64_data.replace("data:image/jpg;base64,", "")
         image_data = base64.b64decode(base64_data)
