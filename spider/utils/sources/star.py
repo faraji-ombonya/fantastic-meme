@@ -44,7 +44,7 @@ class Star(BaseSource):
     def __init__(self):
         self.star_base_url = settings.STAR_BASE_URL
             
-    def extract_v2(self, url):
+    def extract(self, url):
         entries = []
         response = requests.get(url)
 
@@ -104,21 +104,21 @@ class Star(BaseSource):
 
         return entries
     
-    def extract_bulk_v2(self, urls):
+    def extract_bulk(self, urls):
         bulk_entries = []
         for url in urls:
             entries = self.extract_v2(url)
             bulk_entries.extend(entries)
         return bulk_entries
 
-    def transform_v2(self, entry):
+    def transform(self, entry):
         post = {}
         post['slug'] = entry.get("link")
         post['content'] = entry
         post['source'] = Post.STAR
         return post
 
-    def transform_bulk_v2(self, entries):
+    def transform_bulk(self, entries):
         posts = []
         for entry in entries:
             post = self.transform_v2(entry)

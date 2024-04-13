@@ -10,7 +10,8 @@ logging.basicConfig(
 
 class Telegram():
     SPORTS_KENYA = "sports-kenya"
-    KENYAN_POLITICS = "kenyan-politics"    
+    KENYAN_POLITICS = "kenyan-politics"
+    TEST_CHANNEL = "test-channel"    
 
     def __init__(self):
         self.chat_id = settings.TELEGRAM_CHAT_ID
@@ -19,6 +20,7 @@ class Telegram():
         self.chat_ids = {
             self.SPORTS_KENYA: settings.TELEGRAM_SPORTS_KENYA_CHAT_ID,
             self.KENYAN_POLITICS: settings.TELEGRAM_KENYAN_POLITICS_CHAT_ID,
+            self.TEST_CHANNEL: settings.TELEGRAM_TEST_CHANNEL_CHAT_ID
         }
         self.url = f"{self.base_url}/bot{self.api_key}/sendMessage"
 
