@@ -15,7 +15,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return self.slug
     
     def mark_as_posted(self):
         self.is_posted = True
