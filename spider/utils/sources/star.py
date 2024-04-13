@@ -5,6 +5,13 @@ from bs4 import BeautifulSoup
 
 from django.conf import settings
 from spider.models import Post
+from spider.utils.sources.base import (
+    BaseSource,
+    NoPendingPostsError,
+    UnableToSavePostsError,
+    UnableToTransformPostError,
+    NoPostsFoundError,
+)
 
 
 logging.basicConfig(
@@ -14,7 +21,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class Star():
+class Star(BaseSource):
     SPORTS = 'sports'
     POLITICS = 'politics'
 
@@ -361,27 +368,17 @@ class Star():
             post = self.transform_v2(entry)
             posts.insert(0, post)
         return posts
-
-    def load_v2(self, post):
-        Post.objects.create(post)
-
-    def load_bulk_v2(self, posts):
-        Post.objects.bulk_create(
-            [Post(**post) for post in posts], ignore_conflicts=True)
-        
-    def get_posts(self):
-        return Post.objects.filter(source=Post.STAR, is_posted=False)
-        
+    
     def to_telegram_post(self, post):
         content = post.content
         title = content.get('title')
         link = content.get('link')
-
+        
         telegram_post = {
             "message": f"{title}\n{link}",
             "id": post.id
         }
-        
+
         return telegram_post
 
     def to_telegram_posts(self, posts):
@@ -391,34 +388,3 @@ class Star():
             telegram_posts.append(telegram_post)
         return telegram_posts
 
-    def acknowledge_post(self, telegram_post):
-        post = Post.objects.get(id=telegram_post.id)
-        post.is_posted = True
-        post.save()
-        return
-    
-    def acknowledge_posts(self, telegram_posts):
-        for telegram_post in telegram_posts:
-            self.acknowledge_post(telegram_post)
-        return
-
-
-
-
-
-
-
-class NoPendingPostsError(Exception):
-    pass
-
-
-class UnableToTransformPostError(Exception):
-    pass
-
-
-class NoPostsFoundError(Exception):
-    pass
-
-
-class UnableToSavePostsError(Exception):
-    pass

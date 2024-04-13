@@ -2,8 +2,8 @@ import time
 import random
 import logging
 from spider.models import Post
-from spider.utils.standard import Standard
-from spider.utils.star import (
+from spider.utils.sources.standard import Standard
+from spider.utils.sources.star import (
     Star, 
     NoPendingPostsError, 
     UnableToTransformPostError, 
