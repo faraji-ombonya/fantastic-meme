@@ -126,7 +126,7 @@ class StarManager():
     POLITICS = 'politics'
     SPORTS = 'sports'
 
-    def __init__(self):
+    def __init__(self, domain):
         pass
     
     def run(self):
@@ -160,3 +160,16 @@ class StarManager():
 
         except UnableToSavePostsError:
             logger.warning("Unable to save posts from The Star")
+
+        
+    def run_v2(self, domain):
+        star = Star()
+        urls = star.DOMAINS[domain]
+        entries = star.extract_bulk_v2(urls)
+        posts = star.transform_bulk_v2(entries)
+        star.load_bulk(posts)
+        pending_posts = star.get_pending_posts()
+        
+        telegram = Telegram()
+        sent_messages = telegram.send_messages(pending_posts)
+        star.acknowledge_posts(sent_messages)
