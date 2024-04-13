@@ -376,14 +376,31 @@ class Star():
         content = post.content
         title = content.get('title')
         link = content.get('link')
-        return f"{title}\n{link}"
 
-    def to_telegram_post_bulk(self, posts):
+        telegram_post = {
+            "message": f"{title}\n{link}",
+            "id": post.id
+        }
+        
+        return telegram_post
+
+    def to_telegram_posts(self, posts):
         telegram_posts = []
         for post in posts:
             telegram_post = self.to_telegram_post(post)
             telegram_posts.append(telegram_post)
         return telegram_posts
+
+    def acknowledge_post(self, telegram_post):
+        post = Post.objects.get(id=telegram_post.id)
+        post.is_posted = True
+        post.save()
+        return
+    
+    def acknowledge_posts(self, telegram_posts):
+        for telegram_post in telegram_posts:
+            self.acknowledge_post(telegram_post)
+        return
 
 
 
