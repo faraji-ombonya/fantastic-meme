@@ -12,7 +12,7 @@ logging.basicConfig(
 class Standard(BaseSource):
     SPORTS = 'sports'
 
-    DOMAINS = {
+    DOMAIN_URLS = {
         SPORTS: [settings.STANDARD_SPORTS_URL]
     }
 
@@ -26,7 +26,7 @@ class Standard(BaseSource):
     def extract_bulk(self, urls):
         bulk_entries = []
         for url in urls:
-            entries = self.extract_v2(url)
+            entries = self.extract(url)
             bulk_entries.extend(entries)
         return bulk_entries
     
