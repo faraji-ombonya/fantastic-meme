@@ -1,7 +1,8 @@
+from abc import ABC, abstractmethod
 from spider.models import Post
 
 
-class BaseSource():
+class BaseSource(ABC):
     def __init__(self) -> None:
         pass
 
@@ -38,6 +39,28 @@ class BaseSource():
             telegram_post = self.to_telegram_post(post)
             telegram_posts.append(telegram_post)
         return telegram_posts
+
+    @abstractmethod
+    def transform(self, entry):
+        pass
+
+    def transform_bulk(self, entries):
+        posts = []
+        for entry in entries:
+            post = self.transform(entry)
+            posts.insert(0, post)
+        return posts
+    
+    @abstractmethod
+    def extract(self, url):
+        pass
+
+    def extract_bulk(self, urls):
+        bulk_entries = []
+        for url in urls:
+            entries = self.extract(url)
+            bulk_entries.extend(entries)
+        return bulk_entries
 
 
 class NoPendingPostsError(Exception):
