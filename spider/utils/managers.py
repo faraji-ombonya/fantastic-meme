@@ -45,9 +45,7 @@ class SpiderManager():
                 standard.SPORTS: telegram.SPORTS_KENYA,
                 "test": telegram.TEST_CHANNEL
             }
-            sent_posts = telegram.send_posts(
-                telegram_posts, domain_channel[domain])
-            standard.acknowledge_posts(sent_posts)
+            telegram.send_posts(telegram_posts, domain_channel[domain])
         except NoPendingPostsError:
             logger.warning("No pending posts from standard")
 
@@ -74,9 +72,7 @@ class SpiderManager():
                 star.SPORTS: telegram.SPORTS_KENYA,
                 "test": telegram.TEST_CHANNEL,
             }
-            sent_posts = telegram.send_posts(
-                telegram_posts, domain_channel[domain])
-            star.acknowledge_posts(sent_posts)
+            telegram.send_posts(telegram_posts, domain_channel[domain])
         except NoPendingPostsError:
             logger.warning("No pending posts from star")
 

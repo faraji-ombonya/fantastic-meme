@@ -5,6 +5,7 @@ import time
 import random
 
 from django.conf import settings
+from spider.models import Post
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,8 +28,15 @@ class Telegram():
         self.url = f"{self.base_url}/bot{self.api_key}/sendMessage"
         self.rate_limited = rate_limited
 
+    def acknowledge_post(self, post_slug):
+        """Acknowledge that a post has been sent to the channel."""
+        post = Post.objects.get(slug=post_slug)
+        post.mark_as_posted()
+        return
+
     def send_post(self, post, channel):
         message = post.get("message")
+        slug = post.get("slug")
         payload = {
             "chat_id": self.chat_ids[channel],
             "text": message
@@ -41,6 +49,7 @@ class Telegram():
             response = requests.get(self.url, params=payload)
             if response.status_code == 200:
                 logging.info("Message sent successfully.")
+                self.acknowledge_post(post_slug=slug)
                 return post
             else:
                 logging.info(f"An error occurred. Status: {response.status_code}")
