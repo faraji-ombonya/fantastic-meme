@@ -12,7 +12,7 @@ logging.basicConfig(
 class Standard(BaseSource):
     SPORTS = 'sports'
 
-    DOMAINS = {
+    DOMAIN_URLS = {
         SPORTS: [settings.STANDARD_SPORTS_URL]
     }
 
@@ -23,13 +23,6 @@ class Standard(BaseSource):
         feed = feedparser.parse(self.standard_sports_url)
         return feed.get("entries")
     
-    def extract_bulk(self, urls):
-        bulk_entries = []
-        for url in urls:
-            entries = self.extract_v2(url)
-            bulk_entries.extend(entries)
-        return bulk_entries
-    
     def transform(self, entry):
         post = {}
         post['slug'] = entry.get('id')
@@ -37,11 +30,3 @@ class Standard(BaseSource):
         post['source'] = Post.STANDARD
         return post
         
-    def transform_bulk(self, entries):
-        posts = []
-        for entry in entries:
-            post = self.transform(entry)
-            posts.insert(0, post)
-        return posts
-    
-    

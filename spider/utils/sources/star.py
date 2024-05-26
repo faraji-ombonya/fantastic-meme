@@ -25,7 +25,7 @@ class Star(BaseSource):
     SPORTS = 'sports'
     POLITICS = 'politics'
 
-    DOMAINS = {
+    DOMAIN_URLS = {
         SPORTS: [
             settings.STAR_SPORTS_URL,
             settings.STAR_SPORTS_FOOTBALL_URL,
@@ -104,26 +104,9 @@ class Star(BaseSource):
 
         return entries
     
-    def extract_bulk(self, urls):
-        bulk_entries = []
-        for url in urls:
-            entries = self.extract(url)
-            bulk_entries.extend(entries)
-        return bulk_entries
-
     def transform(self, entry):
         post = {}
         post['slug'] = entry.get("link")
         post['content'] = entry
         post['source'] = Post.STAR
         return post
-
-    def transform_bulk(self, entries):
-        posts = []
-        for entry in entries:
-            post = self.transform(entry)
-            posts.insert(0, post)
-        return posts
-    
-
-
