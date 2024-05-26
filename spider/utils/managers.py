@@ -55,6 +55,7 @@ class SpiderManager():
         source -- content source e.g. star, standard
         domain -- content domain e.g. politics, sports
         """
+        logger.info(f"Running source: {source}, Domain: {domain}")
         source_instance = self.SOURCE_CLASS[source]()
 
         try:
