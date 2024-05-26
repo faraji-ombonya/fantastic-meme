@@ -61,7 +61,7 @@ class SpiderManager():
         try:
             urls = source_instance.DOMAIN_URLS[domain]
         except Exception as e:
-            logger.info(e)
+            logger.warning(e)
             return
 
         entries = source_instance.extract_bulk(urls)
