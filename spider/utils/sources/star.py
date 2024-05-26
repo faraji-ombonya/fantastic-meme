@@ -25,7 +25,7 @@ class Star(BaseSource):
     SPORTS = 'sports'
     POLITICS = 'politics'
 
-    DOMAINS = {
+    DOMAIN_URLS = {
         SPORTS: [
             settings.STAR_SPORTS_URL,
             settings.STAR_SPORTS_FOOTBALL_URL,
