@@ -24,6 +24,13 @@ class SpiderManager():
         pass
 
     def run_standard(self, domain):
+        """Run Standard.
+
+        Run Standard, pulling from specified domain.
+
+        Arguments:
+        domain -- The domain to pull from e.g sports, politics
+        """
         try:
             standard = Standard()
             urls = standard.DOMAINS[domain]
@@ -45,6 +52,13 @@ class SpiderManager():
             logger.warning("No pending posts from standard")
 
     def run_star(self, domain):
+        """Run The Star. 
+
+        Run The Star, pulling from specified domain.
+
+        Arguments:
+        domain -- The domain to pull from e.g sports, politics
+        """
         try:
             star = Star()
             urls = star.DOMAINS[domain]
@@ -67,11 +81,20 @@ class SpiderManager():
             logger.warning("No pending posts from star")
 
     def run(self):
+        """Run spider manager.
+
+        Run spider manager by calling a source method and a domain.
+        """
         self.run_standard('sports')
         self.run_star('sports')
         self.run_star('politics')
 
     def run_forever(self):
+        """Run spider manager forever.
+
+        Run spider manager forever by calling a source method and a domain
+        in an infinite loop with random sleep times.
+        """
         logger.info("Running in forever mode.")
         while True:
             self.run()
