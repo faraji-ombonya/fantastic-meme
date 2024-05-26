@@ -5,27 +5,33 @@ class BaseSource():
         pass
 
     def load(self, post):
+        """Create a Post."""
         Post.objects.create(post)
 
     def load_bulk(self, posts):
+        """Create Posts in bulk."""
         Post.objects.bulk_create(
             [Post(**post) for post in posts], ignore_conflicts=True)
         
     def get_pending_posts(self, source):
+        """Get all pending posts."""
         return Post.objects.filter(source=source, is_posted=False)
     
     def acknowledge_post(self, telegram_post):
+        """Acknowledge that a post has been sent."""
         slug = telegram_post.get("slug")
         post = Post.objects.get(slug=slug)
         post.mark_as_posted()
         return
     
     def acknowledge_posts(self, telegram_posts):
+        """Acknowledge that posts have been sent."""
         for telegram_post in telegram_posts:
             self.acknowledge_post(telegram_post)
         return
 
     def to_telegram_post(self, post):
+        """Convert a generic post to a telegram post."""
         content = post.content
         title = content.get('title')
         link = content.get('link')
@@ -38,6 +44,7 @@ class BaseSource():
         return telegram_post
 
     def to_telegram_posts(self, posts):
+        """Convert generic posts to telegram posts."""
         telegram_posts = []
         for post in posts:
             telegram_post = self.to_telegram_post(post)
