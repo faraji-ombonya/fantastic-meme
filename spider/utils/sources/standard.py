@@ -11,16 +11,18 @@ logging.basicConfig(
 
 class Standard(BaseSource):
     SPORTS = 'sports'
+    POLITICS = 'politics'
 
     DOMAIN_URLS = {
-        SPORTS: [settings.STANDARD_SPORTS_URL]
+        SPORTS: [settings.STANDARD_SPORTS_URL],
+        POLITICS: [settings.STANDARD_POLITICS_URL]
     }
 
     def __init__(self):
         self.standard_sports_url = settings.STANDARD_SPORTS_URL
       
     def extract(self, url):
-        feed = feedparser.parse(self.standard_sports_url)
+        feed = feedparser.parse(url)
         return feed.get("entries")
     
     def transform(self, entry):
