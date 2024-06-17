@@ -78,7 +78,7 @@ class Star(BaseSource):
             entry['synopsis'] = None
             article_synopsis = article.find('p', 'article-synopsis')
             if article_synopsis:
-                entry['synopsis'] = article_synopsis.contents[0]
+                entry['synopsis'] = article_synopsis.string
 
             # author
             entry['author'] = None
