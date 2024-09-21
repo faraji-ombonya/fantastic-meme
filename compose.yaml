@@ -1,0 +1,24 @@
+name: fantastic-meme
+
+services:
+  backend:
+    build:
+      context: .
+    networks:
+      - atom
+    expose:
+      - "8000"
+    ports:
+      - "8001:8000"
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+    restart: unless-stopped
+
+secrets:
+  db-password:
+    file: db/pass/password.txt
+
+networks:
+  atom:
