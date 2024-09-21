@@ -64,7 +64,12 @@ class SpiderManager():
             logger.warning(e)
             return
 
-        entries = source_instance.extract_bulk(urls)
+        try:
+            entries = source_instance.extract_bulk(urls)
+        except Exception as e:
+            logger.warning("No internet connection")
+            return
+
         posts = source_instance.transform_bulk(entries)
         source_instance.load_bulk(posts)
 
