@@ -80,7 +80,7 @@ class PostManager():
             session.add_all(new_posts)
             session.commit()
 
-    def mark_as_posted(self, post_id):
+    def mark_as_posted(self, post_id: int) -> None:
         """Mark a post as posted."""
         with Session(engine) as session:
             stmt = select(Post).where(Post.id == post_id)
