@@ -15,7 +15,7 @@ class Post(Base):
     is_posted: Mapped[bool] = mapped_column(default=False)
     
     
-engine = create_engine("sqlite:///sqlite.db")
+engine = create_engine("sqlite:///db.sqlite3")
 
 Base.metadata.create_all(engine)
 
