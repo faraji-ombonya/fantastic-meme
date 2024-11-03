@@ -1,55 +1,109 @@
-import twitter_bot.tweepy_bot as tp
-import twitter_bot.tweety as tt
-import telegram.bot as tg
-import json
-import standard.content as st
-import ids.handle_ids as h
+"""Web scrapper main module."""
+
+import time
+import random
+import logging
+
+from sources import BaseSource, Standard, Star
+from channels import Telegram
+
+# Enable logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", 
+    level=logging.INFO,
+)
+
+logger = logging.getLogger(__name__)
 
 
-def send_twitter_updates():
-    user_id = 22910295
-    tweets = tp.get_tweets(user_id)
+class Spider:
+    """Spider."""
 
-    tweet_ids = []
-    for tweet in tweets:
-        tweet_ids.append(tweet.id)
+    SOURCE_CLASS = {
+        "star": Star,
+        "standard": Standard,
+    }
 
-    tp.update_ids(tweet_ids)
+    SOURCE_TYPE = {
+        "star": "star",
+        "standard": "standard",
+    }
 
-    pending_ids_list = tp.get_pending_ids()
+    DOMAIN_CHANNEL = {
+        "sports": Telegram.SPORTS_KENYA,
+        "politics": Telegram.KENYAN_POLITICS,
+        "test": Telegram.TEST_CHANNEL,
+    }
 
-    if len(pending_ids_list):
-        url = tt.create_url(pending_ids_list)
-        json_response = tt.connnect_to_endpoint(url)
-        with open("new_tweets.json","w+") as tweets_json_file:
-            tweets_json_file.write(json.dumps(json_response, indent=4, sort_keys=True))
+    def __init__(self, acknowledge=True):
+        self.acknowledge = acknowledge
 
-        with open("new_tweets.json") as file:
-            data = json.load(file)
+    def run_source(self, source: str , domain):
+        """Run a source by pulling content for a particular domain.
 
-            for item in data["data"]:
-                try: 
-                    expanded_url = item["entities"]["urls"][0]["expanded_url"]
-                except:
-                    continue
-                tg.send_message(expanded_url)
-        tp.save_posted_ids(pending_ids_list)
+        Arguments:
+            source (str): an object representing a content source e.g. star, standard 
+                that has the name of the source and the domains to pull from
+        """
+        logger.info(f"Running source: {source}, Domain: {domain}")
+        source_instance: BaseSource = self.SOURCE_CLASS[source]()
+
+        try:
+            urls = source_instance.DOMAIN_URLS[domain]
+        except Exception as e:
+            logger.warning(e)
+            return
+
+        try:
+            entries = source_instance.extract_bulk(urls)
+        except Exception as e:
+            logger.warning("No internet connection")
+            return
+
+        posts = source_instance.transform_bulk(entries)
+
+        source_instance.load_bulk(posts)
+
+        pending_posts = source_instance.get_pending_posts(
+            source=self.SOURCE_TYPE[source]
+        )
+        telegram_posts = source_instance.to_telegram_posts(pending_posts)
+
+        telegram = Telegram(acknowledge=self.acknowledge)
+        telegram.send_posts(telegram_posts, self.DOMAIN_CHANNEL[domain])
+
+    def run_sources(self, sources: list[dict]) -> None:
+        """Run sources.
+        
+        Arguments:
+            sources (list[dict]): A list of dictionaries.
+        """
+        for source in sources:
+            source_name = source.get("name")
+            source_domains = source.get("domains")
+            for domain in source_domains:
+                self.run_source(source=source_name, domain=domain)
+                time.sleep(random.randint(10, 20))
+            time.sleep(random.randint(20, 30))
+
+    def run_forever(self):
+        """Run spider manager forever.
+
+        Run spider manager forever by calling run_sources()
+        method in an infinite loop with random sleep times.
+        """
+        logger.info("Running in forever mode.")
+        sources = [
+            {"name": "standard", "domains": ["sports", "politics"]},
+            {"name": "star", "domains": ["sports", "politics"]},
+        ]
+        while True:
+            self.run_sources(sources=sources)
+            logger.info("Done fetching and sharing posts. Going to sleep for a while.")
+            time.sleep(random.randint(600, 3600))
 
 
-def send_standard_updates():
-    st.fetch_content_standard()
-    ids = h.get_ids_standard()
-    h.update_ids(ids)
-    pending_ids = h.get_pending_ids()
 
-    if len(pending_ids):
-        posts = st.get_posts(pending_ids)
-
-        for item in posts:
-            tg.send_message(item)
-            # print(item)
-
-        h.save_posted_ids(pending_ids)
-    return None
-
-send_standard_updates()
+if __name__ == "__main__":
+    manager = Spider()
+    manager.run_forever()

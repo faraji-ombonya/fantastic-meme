@@ -1,15 +1,32 @@
 import base64
-import requests
 import logging
-import time
+import os
 import random
 
-from django.conf import settings
-from spider.models import Post
+import requests
+import time
+from dotenv import load_dotenv
+
+from models import Post, PostManager
+
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s -%(levelname)s - %(message)s')
+    format='%(asctime)s -%(levelname)s - %(message)s'
+)
+
+load_dotenv()
+
+
+TELEGRAM_API_KEY = os.getenv("TELEGRAM_API_KEY")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+TELEGRAM_SPORTS_KENYA_CHAT_ID = os.getenv("TELEGRAM_SPORTS_KENYA_CHAT_ID")
+TELEGRAM_TEST_CHANNEL_CHAT_ID = os.getenv("TELEGRAM_TEST_CHANNEL_CHAT_ID")
+TELEGRAM_KENYAN_POLITICS_CHAT_ID = os.getenv(
+    "TELEGRAM_KENYAN_POLITICS_CHAT_ID"
+)
+
+TELEGRAM_BASE_URL="https://api.telegram.org"
 
 
 class Telegram():
@@ -18,27 +35,27 @@ class Telegram():
     TEST_CHANNEL = "test-channel"
 
     def __init__(self, rate_limited=True, acknowledge=True):
-        self.chat_id = settings.TELEGRAM_CHAT_ID
-        self.base_url = settings.TELEGRAM_BASE_URL
-        self.api_key = settings.TELEGRAM_API_KEY
+        self.chat_id = TELEGRAM_CHAT_ID
+        self.base_url = TELEGRAM_BASE_URL
+        self.api_key = TELEGRAM_API_KEY
         self.chat_ids = {
-            self.SPORTS_KENYA: settings.TELEGRAM_SPORTS_KENYA_CHAT_ID,
-            self.KENYAN_POLITICS: settings.TELEGRAM_KENYAN_POLITICS_CHAT_ID,
-            self.TEST_CHANNEL: settings.TELEGRAM_TEST_CHANNEL_CHAT_ID
+            self.SPORTS_KENYA: TELEGRAM_SPORTS_KENYA_CHAT_ID,
+            self.KENYAN_POLITICS: TELEGRAM_KENYAN_POLITICS_CHAT_ID,
+            self.TEST_CHANNEL: TELEGRAM_TEST_CHANNEL_CHAT_ID
         }
         self.url = f"{self.base_url}/bot{self.api_key}/sendMessage"
         self.rate_limited = rate_limited
         self.acknowledge = acknowledge
 
-    def acknowledge_post(self, post_slug):
+    def acknowledge_post(self, slug: str) -> None:
         """Acknowledge that a post has been sent to the channel."""
-        post = Post.objects.get(slug=post_slug)
-        post.mark_as_posted()
-        return
+        manager = PostManager()
+        manager.mark_as_posted(slug)
 
     def send_post(self, post, channel):
-        message = post.get("message")
-        slug = post.get("slug")
+        """Send a post to a Telegram channel."""
+        message = post.message
+        slug = post.slug
         payload = {
             "chat_id": self.chat_ids[channel],
             "text": message
@@ -47,26 +64,23 @@ class Telegram():
         snippet = f"{message[:32]}..." if len(message) > 32 else message
         logging.info(f"Sending message: {snippet}")
 
-        try:
-            response = requests.get(self.url, params=payload)
+        response = requests.get(self.url, params=payload)
 
-            if response.status_code != 200:
-                logging.info(
-                    f"An error occurred. Status: {response.status_code}")
-                return False
-
-            logging.info("Message sent successfully.")
-
-            if self.acknowledge:
-                self.acknowledge_post(post_slug=slug)
-
-            return post
-
-        except:
-            logging.error(f"Failed to send message to telegram.")
+        if response.status_code != 200:
+            logging.info(
+                f"An error occurred. Status: {response.status_code}"
+            )
             return False
 
-    def send_posts(self, posts, chanel):
+        logging.info("Message sent successfully.")
+
+        if self.acknowledge:
+            self.acknowledge_post(slug)
+
+        return post
+        
+    def send_posts(self, posts, chanel) -> list[Post]:
+        """Send posts to a telegram channel."""
         sent_posts = []
         for post in posts:
             sent_post = self.send_post(post, chanel)
@@ -100,3 +114,11 @@ class Telegram():
             else:
                 print("Failed to send image.")
                 return False
+
+
+class TelegramPost:
+    """A telegram post."""
+    def __init__(self, message: str, slug: str) -> None:
+        """Initialize the instance."""
+        self.message = message
+        self.slug = slug
