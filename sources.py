@@ -1,8 +1,9 @@
-import requests
 import logging
-import feedparser
-from bs4 import BeautifulSoup
 from abc import ABC, abstractmethod
+
+import feedparser
+import requests
+from bs4 import BeautifulSoup
 
 from channels import TelegramPost
 from models import PostManager, Post
@@ -40,10 +41,8 @@ class BaseSource(ABC):
 
     def load(self, post) -> None:
         """Create a Post."""
-
         manager = PostManager()
         manager.create(**post)
-        # Post.objects.create(post)
 
     def load_bulk(self, posts) -> None:
         """Create Posts in bulk."""
@@ -51,14 +50,21 @@ class BaseSource(ABC):
         manager.bulk_create([Post(**post) for post in posts])
         return
 
-    def get_pending_posts(self, source):
-        """Get all pending posts."""
+    def get_pending_posts(self, source: str) -> list[Post]:
+        """Get all pending posts from the specified source."""
         manager = PostManager()
         posts = manager.get_pending_posts(source)
         return posts
 
-    def to_telegram_post(self, post) -> TelegramPost:
-        """Convert a generic post to a telegram post."""
+    def to_telegram_post(self, post: Post) -> TelegramPost:
+        """Convert a generic post to a telegram post.
+        
+        Arguments:
+            post (Post): A generic post.
+
+        Returns:
+            telegram_post (TelegramPost): A telegram post.
+        """
         content = post.content
         title = content.get('title')
         link = content.get('link')
@@ -72,12 +78,16 @@ class BaseSource(ABC):
 
         return telegram_post
 
-    def to_telegram_posts(self, posts):
-        """Convert generic posts to telegram posts."""
-        telegram_posts = []
-        for post in posts:
-            telegram_post = self.to_telegram_post(post)
-            telegram_posts.append(telegram_post)
+    def to_telegram_posts(self, posts: list[Post]) -> list[TelegramPost]:
+        """Convert generic posts to telegram posts.
+        
+        Arguments:
+            posts (list[Post]): A list of generic posts.
+
+        Returns:
+            telegram_posts (list[TelegramPost]): A list of telegram posts.
+        """
+        telegram_posts = [self.to_telegram_post(post) for post in posts]
         return telegram_posts
 
     @abstractmethod

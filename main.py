@@ -16,14 +16,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class SpiderManager:
-    """Spider manager.
-
-    Example Usage:
-        from spider.utils.managers import SpiderManager
-        m = SpiderManager()
-        m.run_sources_and_domains(sources=["standard", "star"], domains=["sports", "politics"])
-    """
+class Spider:
+    """Spider."""
 
     SOURCE_CLASS = {
         "star": Star,
@@ -45,10 +39,10 @@ class SpiderManager:
         self.acknowledge = acknowledge
 
     def run_source(self, source: str , domain):
-        """Run a source pulling content for a particular domain.
+        """Run a source by pulling content for a particular domain.
 
         Arguments:
-            source: an object representing a content source e.g. star, standard 
+            source (str): an object representing a content source e.g. star, standard 
                 that has the name of the source and the domains to pull from
         """
         logger.info(f"Running source: {source}, Domain: {domain}")
@@ -111,5 +105,5 @@ class SpiderManager:
 
 
 if __name__ == "__main__":
-    manager = SpiderManager()
+    manager = Spider()
     manager.run_forever()

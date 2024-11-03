@@ -47,12 +47,10 @@ class Telegram():
         self.rate_limited = rate_limited
         self.acknowledge = acknowledge
 
-    def acknowledge_post(self, post_slug: str) -> None:
+    def acknowledge_post(self, slug: str) -> None:
         """Acknowledge that a post has been sent to the channel."""
         manager = PostManager()
-        post = manager.get_post_by_slug(slug=post_slug)
-        manager.mark_as_posted(post.id)
-        return
+        manager.mark_as_posted(slug)
 
     def send_post(self, post, channel):
         """Send a post to a Telegram channel."""
@@ -77,7 +75,7 @@ class Telegram():
         logging.info("Message sent successfully.")
 
         if self.acknowledge:
-            self.acknowledge_post(post_slug=slug)
+            self.acknowledge_post(slug)
 
         return post
         

@@ -25,6 +25,7 @@ class PostManager():
         pass
 
     def create(*args, **kwargs) -> Post:
+        """Create and persist a Post object."""
         with Session(engine) as session:
             post = Post(
                 slug = kwargs.get("slug"),
@@ -80,10 +81,14 @@ class PostManager():
             session.add_all(new_posts)
             session.commit()
 
-    def mark_as_posted(self, post_id: int) -> None:
-        """Mark a post as posted."""
+    def mark_as_posted(self, slug: str) -> None:
+        """Mark a post as posted.
+        
+        Arguments:
+            slug (str): The slug of the post to be marked.
+        """
         with Session(engine) as session:
-            stmt = select(Post).where(Post.id == post_id)
+            stmt = select(Post).where(Post.slug == slug)
             post = session.scalars(stmt).one()
             post.is_posted = True
             session.commit()
