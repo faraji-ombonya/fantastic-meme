@@ -1,8 +1,10 @@
 """Web scrapper main module."""
 
+import os
 import time
 import random
 import logging
+from concurrent.futures import ThreadPoolExecutor
 
 from sources import BaseSource, Standard, Star
 from channels import Telegram
@@ -83,7 +85,7 @@ class Spider:
         telegram = Telegram(acknowledge=self.acknowledge)
         telegram.send_posts(telegram_posts, self.DOMAIN_CHANNEL[domain])
 
-    def run_sources(self, sources: list[dict]) -> None:
+    def run_sources(self, sources: list[dict[str, list[str]]]) -> None:
         """Run sources.
         
         Arguments:
@@ -92,9 +94,14 @@ class Spider:
         for source in sources:
             source_name = source.get("name")
             source_domains = source.get("domains")
-            for domain in source_domains:
-                self.run_source(source=source_name, domain=domain)
-                time.sleep(random.randint(10, 20))
+
+            # Run each domain in a separate thread
+            with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+                futures = [
+                    executor.submit(self.run_source, source_name, domain) 
+                    for domain in source_domains
+                ]
+
             time.sleep(random.randint(20, 30))
 
     def run_forever(self):
@@ -104,7 +111,7 @@ class Spider:
         method in an infinite loop with random sleep times.
         """
         logger.info("Running in forever mode.")
-        sources = [
+        sources: list[dict[str, list[str]]] = [
             {"name": "standard", "domains": ["sports", "politics"]},
             {"name": "star", "domains": ["sports", "politics"]},
         ]
