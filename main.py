@@ -104,7 +104,7 @@ class Spider:
 
             time.sleep(random.randint(20, 30))
 
-    def run_forever(self):
+    def run_forever(self) -> None:
         """Run spider manager forever.
 
         Run spider manager forever by calling run_sources()
