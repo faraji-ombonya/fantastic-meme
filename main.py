@@ -38,37 +38,48 @@ class Spider:
     def __init__(self, acknowledge=True):
         self.acknowledge = acknowledge
 
-    def run_source(self, source: str , domain):
+    def run_source(self, source: str , domain: str) -> None:
         """Run a source by pulling content for a particular domain.
 
         Arguments:
             source (str): an object representing a content source e.g. star, standard 
-                that has the name of the source and the domains to pull from
+                that has the name of the source and the domains to pull from.
+            domain (str): The domain for which to run the source e.g sports, politics
         """
         logger.info(f"Running source: {source}, Domain: {domain}")
+
+        # Get an instance of the specified source.
         source_instance: BaseSource = self.SOURCE_CLASS[source]()
 
+        # Get the urls of the source.
         try:
             urls = source_instance.DOMAIN_URLS[domain]
         except Exception as e:
             logger.warning(e)
             return
 
+        # Get entries from each url.
         try:
             entries = source_instance.extract_bulk(urls)
         except Exception as e:
             logger.warning("No internet connection")
             return
 
+        # Transform the entries into generic posts.
         posts = source_instance.transform_bulk(entries)
 
+        # Load the generic posts into the database.
         source_instance.load_bulk(posts)
 
+        # Get pending posts from the database.
         pending_posts = source_instance.get_pending_posts(
             source=self.SOURCE_TYPE[source]
         )
+
+        # Convert the generic posts into telegram posts
         telegram_posts = source_instance.to_telegram_posts(pending_posts)
 
+        # Send the posts to the appropriate telegram channel.
         telegram = Telegram(acknowledge=self.acknowledge)
         telegram.send_posts(telegram_posts, self.DOMAIN_CHANNEL[domain])
 
