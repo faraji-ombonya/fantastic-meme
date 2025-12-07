@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from ...models import Post
-from lib.extractors import TheStandardExtractor, TheStarExtractor
-from lib.transformers import TheStandardTransformer, TheStarTransformer
+from services.extractors import TheStandardExtractor, TheStarExtractor
+from services.transformers import TheStandardTransformer, TheStarTransformer
 
 
 class Command(BaseCommand):
