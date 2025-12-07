@@ -2,8 +2,8 @@ import uuid
 
 from django.db import models
 
-from .lib.extractors import Extractor
-from .lib.transformers import Transformer, TransformedEntry
+from services.extractors import Extractor
+from services.transformers import Transformer, TransformedEntry
 
 
 class Post(models.Model):
@@ -26,7 +26,7 @@ class Post(models.Model):
         return self
 
     def send(self):
-        pass
+        telegram_post = self.to_telegram_post()
 
     def to_telegram_post(self):
         title = self.content.get("title")
@@ -38,7 +38,7 @@ class Post(models.Model):
         return cls.extractor.extract()
 
     @classmethod
-    def extract_bulk(cls, entry):
+    def bulk_extract(cls, entry):
         pass
 
     @classmethod
@@ -63,7 +63,7 @@ class Post(models.Model):
 
     @classmethod
     def get_pending_posts(cls, source: str):
-        posts = cls.objects.filter(is_posted=False)
+        posts = Post.objects.filter(is_posted=False)
         if source:
             posts = posts.filter(source=source)
         return posts.all()
@@ -71,3 +71,11 @@ class Post(models.Model):
     @classmethod
     def to_telegram_posts(cls, posts: list["Post"]):
         return [post.to_telegram_post() for post in posts]
+
+    @classmethod
+    def set_transformer(cls, transformer: Transformer):
+        cls.transformer = transformer
+
+    @classmethod
+    def set_extractor(cls, extractor: Extractor):
+        cls.extractor = Extractor
