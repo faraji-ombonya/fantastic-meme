@@ -4,6 +4,7 @@ from django.db import models
 
 from services.extractors import Extractor
 from services.transformers import Transformer, TransformedEntry
+from services.senders import Sender, TelegramSender
 
 
 class Post(models.Model):
@@ -13,9 +14,9 @@ class Post(models.Model):
     source = models.CharField(max_length=255)
     is_posted = models.BooleanField(default=False)
 
-    extractor = Extractor
-
-    transformer = Transformer
+    extractor: Extractor
+    transformer: Transformer
+    sender: Sender
 
     def __str__(self):
         return self.slug
@@ -26,7 +27,7 @@ class Post(models.Model):
         return self
 
     def send(self):
-        telegram_post = self.to_telegram_post()
+        return self.sender.send()
 
     def to_telegram_post(self):
         title = self.content.get("title")

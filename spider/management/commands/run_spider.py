@@ -32,11 +32,5 @@ class Command(BaseCommand):
 
             Post.bulk_load(transformed_entries)
 
-        pending_posts = Post.get_pending_posts()
-        for post in pending_posts:
-            post: Post
-            post.to_telegram_post()
-
         for post in Post.objects.filter(is_sent=False).all():
-            post.to_telegram_post()
             post.send()
