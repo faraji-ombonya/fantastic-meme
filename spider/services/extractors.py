@@ -16,7 +16,16 @@ class Extractor(ABC):
 
 
 class TheStandardExtractor(Extractor):
-    def extract(self, url):
+    # The Standard
+    STANDARD_SPORTS_URL = "https://www.standardmedia.co.ke/rss/sports.php"
+    STANDARD_POLITICS_URL = "https://www.standardmedia.co.ke/rss/politics.php"
+    domain_url = {"sports": STANDARD_SPORTS_URL, "politics": STANDARD_POLITICS_URL}
+
+    def __init__(self, domain):
+        self.domain = domain
+
+    def extract(self):
+        url = self.domain_url[self.domain]
         feed = feedparser.parse(url)
         return feed.get("entries")
 
