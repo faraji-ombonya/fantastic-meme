@@ -89,12 +89,12 @@ class TelegramSender(Sender):
         payload = {"chat_id": chat_id, "text": telegram_post.message}
         response = requests.get(URL, params=payload)
 
-        if response.status_code == 200:
-            if self.acknowledge:
-                post.is_posted = True
-                post.save()
-
-            if self.rate_limited:
-                time.sleep(5)
-        else:
+        if response.status_code != 200:
             response.raise_for_status()
+
+        if self.acknowledge:
+            post.is_posted = True
+            post.save()
+
+        if self.rate_limited:
+            time.sleep(5)
