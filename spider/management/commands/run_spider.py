@@ -26,6 +26,14 @@ class Command(BaseCommand):
         transformed_entries = standard_transfomer.bulk_transform(entries)
         Post.bulk_load(transformed_entries)
         pending_posts = Post.get_pending_posts()
+
         sender = TelegramSender()
+        sender.set_channel(TelegramSender.CHANNEL.TEST_CHANNEL)
+
         for post in pending_posts:
-            sender.send(post)
+            self.stdout.write(self.style.SUCCESS(f"Sending {post.slug}"))
+
+            try:
+                sender.send(post)
+            except Exception as e:
+                self.stderr.write(self.style.ERROR(str(e)))

@@ -10,10 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
@@ -117,3 +123,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+
+# Telegram
+TELEGRAM_BASE_URL = os.getenv("TELEGRAM_BASE_URL")
+TELEGRAM_API_KEY = os.getenv("TELEGRAM_API_KEY")
+TELEGRAM_TEST_CHANNEL_CHAT_ID = os.getenv("TELEGRAM_TEST_CHANNEL_CHAT_ID")
+TELEGRAM_SPORTS_KENYA_CHAT_ID = os.getenv("TELEGRAM_SPORTS_KENYA_CHAT_ID")
+TELEGRAM_KENYAN_POLITICS_CHAT_ID = os.getenv("TELEGRAM_KENYAN_POLITICS_CHAT_ID")
+
+# The Standard
+STANDARD_SPORTS_URL = os.getenv("STANDARD_SPORTS_URL")
+STANDARD_POLITICS_URL = os.getenv("STANDARD_POLITICS_URL")
+
+# The Star
+STAR_BASE_URL = os.getenv("STAR_BASE_URL")
+STAR_SPORTS_URL = os.getenv("STAR_SPORTS_URL")
+STAR_SPORTS_FOOTBALL_URL = os.getenv("STAR_SPORTS_FOOTBALL_URL")
+STAR_SPORTS_ATHLETICS_URL = os.getenv("STAR_SPORTS_ATHLETICS_URL")
+STAR_SPORTS_RUGBY_URL = os.getenv("STAR_SPORTS_RUGBY_URL")
+STAR_SPORTS_TENNIS_URL = os.getenv("STAR_SPORTS_TENNIS_URL")
+STAR_SPORTS_GOLF_URL = os.getenv("STAR_SPORTS_GOLF_URL")
+STAR_SPORTS_BOXING_URL = os.getenv("STAR_SPORTS_BOXING_URL")
+STAR_SPORTS_BASKETBALL_URL = os.getenv("STAR_SPORTS_BASKETBALL_URL")
+STAR_POLITICS_URL = os.getenv("STAR_POLITICS_URL")

@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import os
 from typing import TYPE_CHECKING
+from enum import Enum
 
 import requests
 import time
@@ -37,15 +38,38 @@ class TelegramPost:
     snippet: str
 
 
+class ChannelEnum(Enum):
+    SPORTS_KENYA = "sports-kenya"
+    KENYAN_POLITICS = "kenyan-politics"
+    TEST_CHANNEL = "test-channel"
+
+
 class TelegramSender(Sender):
     SPORTS_KENYA = "sports-kenya"
     KENYAN_POLITICS = "kenyan-politics"
     TEST_CHANNEL = "test-channel"
 
+    CHANNEL = ChannelEnum
+
+    CHANNEL_CHAT_ID = {
+        CHANNEL.SPORTS_KENYA: TELEGRAM_SPORTS_KENYA_CHAT_ID,
+        CHANNEL.TEST_CHANNEL: TELEGRAM_TEST_CHANNEL_CHAT_ID,
+        CHANNEL.KENYAN_POLITICS: TELEGRAM_KENYAN_POLITICS_CHAT_ID,
+    }
+
     def __init__(self, rate_limited=True, acknowledge=True):
         self.chat_id = TELEGRAM_CHAT_ID
         self.rate_limited = rate_limited
         self.acknowledge = acknowledge
+        self.channel = None
+
+    def set_channel(self, channel: ChannelEnum.name):
+        self.channel = channel
+
+    def _get_chat_id(self):
+        if not self.channel:
+            raise ValueError("Channel is not set")
+        return self.CHANNEL_CHAT_ID[self.channel]
 
     def _to_telegram_post(self, post: Post) -> TelegramPost:
         title = post.content.get("title")
@@ -60,8 +84,9 @@ class TelegramSender(Sender):
         return TelegramPost(**post)
 
     def send(self, post: Post):
+        chat_id = self._get_chat_id()
         telegram_post = self._to_telegram_post(post)
-        payload = {"chat_id": None, "text": telegram_post.message}
+        payload = {"chat_id": chat_id, "text": telegram_post.message}
         response = requests.get(URL, params=payload)
 
         if response.status_code == 200:
@@ -69,6 +94,7 @@ class TelegramSender(Sender):
                 post.is_posted = True
                 post.save()
 
-    @classmethod
-    def send_posts(cls, posts):
-        pass
+            if self.rate_limited:
+                time.sleep(5)
+        else:
+            response.raise_for_status()
