@@ -3,9 +3,9 @@ import uuid
 from django.db import models
 
 
-from .services.extractors import Extractor
-from .services.transformers import Transformer, TransformedEntry
-from .services.senders import Sender
+from .extractors import Extractor
+from .transformers import Transformer, TransformedEntry
+from .senders import Sender
 
 
 class Post(models.Model):

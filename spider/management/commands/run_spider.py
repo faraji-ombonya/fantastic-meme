@@ -1,9 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from ...models import Post
-from ...services.extractors import TheStandardExtractor, TheStarExtractor
-from ...services.transformers import TheStandardTransformer, TheStarTransformer
-from ...services.senders import TelegramSender
+from ...extractors import TheStandardExtractor, TheStarExtractor
+from ...transformers import TheStandardTransformer, TheStarTransformer
+from ...senders import TelegramSender
 
 
 class Command(BaseCommand):
