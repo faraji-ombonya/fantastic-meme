@@ -1,6 +1,6 @@
 import uuid
 
-from django.db import models
+from django.db import models, IntegrityError
 
 
 from .extractors import Extractor
@@ -10,7 +10,7 @@ from .senders import Sender
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
     content = models.JSONField()
     source = models.CharField(max_length=255)
     is_posted = models.BooleanField(default=False)
@@ -29,11 +29,14 @@ class Post(models.Model):
 
     @classmethod
     def load(cls, transformed_entry: TransformedEntry):
-        return cls.objects.create(
-            slug=transformed_entry.slug,
-            content=transformed_entry.content,
-            source=transformed_entry.source,
-        )
+        try:
+            return cls.objects.create(
+                slug=transformed_entry.slug,
+                content=transformed_entry.content,
+                source=transformed_entry.source,
+            )
+        except IntegrityError:
+            pass
 
     @classmethod
     def bulk_load(cls, transformed_entries: list[TransformedEntry]):
