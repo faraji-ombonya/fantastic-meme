@@ -57,11 +57,11 @@ class TelegramSender(Sender):
         CHANNEL.KENYAN_POLITICS: TELEGRAM_KENYAN_POLITICS_CHAT_ID,
     }
 
-    def __init__(self, rate_limited=True, acknowledge=True):
+    def __init__(self, channel: ChannelEnum.name, rate_limited=True, acknowledge=True):
         self.chat_id = TELEGRAM_CHAT_ID
         self.rate_limited = rate_limited
         self.acknowledge = acknowledge
-        self.channel = None
+        self.channel = channel
 
     def set_channel(self, channel: ChannelEnum.name):
         self.channel = channel
