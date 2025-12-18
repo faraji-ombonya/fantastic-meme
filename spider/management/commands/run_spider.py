@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from ...models import Post
-from ...extractors import TheStandardExtractor, TheStarExtractor
+from ...extractors import Extractor, TheStandardExtractor, TheStarExtractor
 from ...transformers import TheStandardTransformer, TheStarTransformer
 from ...senders import TelegramSender
 from ...data_pipelines import DataPipeline, DataPipelineBuilder
@@ -19,47 +18,73 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("Running spider")
+        # logger.error("hello world")
         pipe_lines: list[DataPipeline] = []
 
-        standard_sports_extractor = TheStandardExtractor(domain="sports")
-        standard_politics_extractor = TheStandardExtractor(domain="politics")
+        # Create extractors
+        self.stdout.write("Creating transformers")
+        standard_sports_ext = TheStandardExtractor(domain=Extractor.DOMAIN.SPORTS)
+        standard_politics_ext = TheStandardExtractor(domain=Extractor.DOMAIN.POLITICS)
+        star_sports_ext = TheStarExtractor(domain=Extractor.DOMAIN.SPORTS)
+        star_politics_ext = TheStarExtractor(domain=Extractor.DOMAIN.POLITICS)
 
-        star_sports_extractor = TheStarExtractor(domain="sports")
-        star_politics_extractor = TheStarExtractor(doman="politics")
-
+        # Create transformers
+        self.stdout.write("Creating transformers")
         standard_transfomer = TheStandardTransformer()
         star_transformer = TheStarTransformer()
 
+        # Create senders
+        self.stdout.write("Creating senders")
         test_channel_sender = TelegramSender(
             channel=TelegramSender.CHANNEL.TEST_CHANNEL
         )
-        politics_channel_sender = TelegramSender(
-            channel=TelegramSender.CHANNEL.KENYAN_POLITICS
-        )
-        sports_channel_sender = TelegramSender(
-            channel=TelegramSender.CHANNEL.SPORTS_KENYA
-        )
+        # politics_channel_sender = TelegramSender(
+        #     channel=TelegramSender.CHANNEL.KENYAN_POLITICS
+        # )
+        # sports_channel_sender = TelegramSender(
+        #     channel=TelegramSender.CHANNEL.SPORTS_KENYA
+        # )
 
         # sports
-        pipe_line_builder = DataPipelineBuilder()
-        pipe_line_builder.set_sender(sports_channel_sender)
-
         standard_sports_pipeline = (
-            pipe_line_builder.set_extractor(standard_sports_extractor)
-            .set_transformer(standard_transfomer)
+            DataPipelineBuilder()
+            .set_extractor(star_sports_ext)
+            .set_transformer(star_transformer)
+            .set_sender(test_channel_sender)
+            .set_name("standard_sports_pipeline")
             .build()
         )
         pipe_lines.append(standard_sports_pipeline)
 
         star_sports_pipeline = (
-            pipe_line_builder.set_extractor(star_sports_extractor)
-            .set_transformer(star_transformer)
+            DataPipelineBuilder()
+            .set_sender(test_channel_sender)
+            .set_extractor(standard_sports_ext)
+            .set_transformer(standard_transfomer)
+            .set_name("star_sports_pipeline")
             .build()
         )
         pipe_lines.append(star_sports_pipeline)
 
         # politics
-        
+        standard_politics_pipeline = (
+            DataPipelineBuilder()
+            .set_extractor(standard_politics_ext)
+            .set_transformer(standard_transfomer)
+            .set_sender(test_channel_sender)
+            .build()
+        )
+        pipe_lines.append(standard_politics_pipeline)
+
+        star_politics_pipeline = (
+            DataPipelineBuilder()
+            .set_extractor(star_politics_ext)
+            .set_transformer(star_transformer)
+            .set_sender(test_channel_sender)
+            .build()
+        )
+        pipe_lines.append(star_politics_pipeline)
 
         for pipe_line in pipe_lines:
+            logger.info(f"Executing: {pipe_line}")
             pipe_line.execute()

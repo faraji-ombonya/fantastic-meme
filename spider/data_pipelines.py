@@ -1,4 +1,5 @@
 from abc import ABC
+import uuid
 
 from .extractors import Extractor
 from .transformers import Transformer
@@ -8,13 +9,13 @@ from .models import Post
 
 class DataPipeline(ABC):
     def __init__(self, transformer: Transformer, extractor: Extractor, sender: Sender):
-        self.sender = sender
-        self.extractor = extractor
         self.transformer = transformer
+        self.extractor = extractor
+        self.sender = sender
 
     def execute(self):
         entries = self.extractor.extract()
-        transformed_entries = self.transformer.transform(entries)
+        transformed_entries = self.transformer.bulk_transform(entries)
         Post.bulk_load(transformed_entries)
         pending_posts = Post.get_pending_posts()
         for post in pending_posts:

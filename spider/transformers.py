@@ -1,6 +1,10 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -30,6 +34,7 @@ class Transformer(ABC):
 
 class TheStandardTransformer(Transformer):
     def transform(self, entry: dict):
+        logger.info(f"Transforming {entry}")
         data = {
             "slug": entry.get("id"),
             "content": entry,
@@ -40,6 +45,7 @@ class TheStandardTransformer(Transformer):
 
 class TheStarTransformer(Transformer):
     def transform(self, entry: dict):
+        logger.info(f"Transforming {entry}")
         data = {
             "slug": entry.get("link"),
             "content": entry,
