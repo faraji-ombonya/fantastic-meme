@@ -45,15 +45,15 @@ class TheStandardExtractor(Extractor):
 
 class TheStarExtractor(Extractor):
     STAR_BASE_URL = "https://www.the-star.co.ke"
-    STAR_SPORTS_URL = "https://www.the-star.co.ke/sports/"
-    STAR_SPORTS_FOOTBALL_URL = "https://www.the-star.co.ke/sports/football/"
-    STAR_SPORTS_ATHLETICS_URL = "https://www.the-star.co.ke/sports/athletics/"
-    STAR_SPORTS_RUGBY_URL = "https://www.the-star.co.ke/sports/rugby/"
-    STAR_SPORTS_TENNIS_URL = "https://www.the-star.co.ke/sports/tennis/"
-    STAR_SPORTS_GOLF_URL = "https://www.the-star.co.ke/sports/golf/"
-    STAR_SPORTS_BOXING_URL = "https://www.the-star.co.ke/sports/boxing/"
-    STAR_SPORTS_BASKETBALL_URL = "https://www.the-star.co.ke/sports/basketball/"
-    STAR_POLITICS_URL = "https://www.the-star.co.ke/siasa/"
+    STAR_SPORTS_URL = "https://www.the-star.co.ke/sports"
+    STAR_SPORTS_FOOTBALL_URL = "https://www.the-star.co.ke/sports/football"
+    STAR_SPORTS_ATHLETICS_URL = "https://www.the-star.co.ke/sports/athletics"
+    STAR_SPORTS_RUGBY_URL = "https://www.the-star.co.ke/sports/rugby"
+    STAR_SPORTS_TENNIS_URL = "https://www.the-star.co.ke/sports/tennis"
+    STAR_SPORTS_GOLF_URL = "https://www.the-star.co.ke/sports/golf"
+    STAR_SPORTS_BOXING_URL = "https://www.the-star.co.ke/sports/boxing"
+    STAR_SPORTS_BASKETBALL_URL = "https://www.the-star.co.ke/sports/basketball"
+    STAR_POLITICS_URL = "https://www.the-star.co.ke/siasa"
 
     domain_urls = {
         ExtractorDomain.SPORTS: [
@@ -72,6 +72,24 @@ class TheStarExtractor(Extractor):
     def __init__(self, domain: ExtractorDomain):
         self.domain = domain
 
+    def _find_all_article_cards(self, soup: BeautifulSoup):
+        """
+        Finds all article cards with the pattern: <a> directly containing <h6> and <p>.
+        """
+        cards = []
+        for a_tag in soup.find_all("a", href=True):
+
+            direct_tags = [
+                child.name
+                for child in a_tag.children
+                if hasattr(child, "name") and child.name in ["h6", "p"]
+            ]
+
+            if set(direct_tags) == {"h6", "p"}:
+                cards.append(a_tag)
+
+        return cards
+
     def extract(self):
 
         if not self.domain:
@@ -79,24 +97,28 @@ class TheStarExtractor(Extractor):
 
         urls = self.domain_urls[self.domain]
 
-        all_entries = []
-
+        entries = []
         for url in urls:
             logger.info(f"Extracting: {url}")
 
-            entries = []
             response = requests.get(url)
 
             if response.status_code != 200:
                 logger.error("Failed to extract entries")
-                return []
+                print("Failed to extract entries")
+                response.raise_for_status()
 
             soup = BeautifulSoup(response.text, "html.parser")
+
             if not soup:
                 logger.error("Failed to parse response")
                 return []
 
-            articles = soup.find_all("div", "section-article")
+            articles = soup.find_all(self._find_all_article_cards)
+
+            for article in articles:
+                print("article::", article)
+
             for article in articles:
                 entry = {}
                 entry["source"] = "The Star"
@@ -138,8 +160,8 @@ class TheStarExtractor(Extractor):
                     if article_section_a:
                         entry["category"] = article_section_a.contents[0]
 
+                print("SYNOPSIS", entry.get("synopsis"))
                 if entry.get("synopsis"):
                     entries.append(entry)
 
-            all_entries.extend(entries)
-        return all_entries
+        return entries

@@ -8,10 +8,20 @@ from .models import Post
 
 
 class DataPipeline(ABC):
-    def __init__(self, transformer: Transformer, extractor: Extractor, sender: Sender):
+    def __init__(
+        self,
+        transformer: Transformer,
+        extractor: Extractor,
+        sender: Sender,
+        name: str | None = None,
+    ):
         self.transformer = transformer
         self.extractor = extractor
         self.sender = sender
+        self.name = name
+
+    def __str__(self):
+        return self.name or "N/A"
 
     def execute(self):
         entries = self.extractor.extract()
@@ -23,6 +33,9 @@ class DataPipeline(ABC):
 
 
 class DataPipelineBuilder:
+    def __init__(self):
+        self.name = None
+
     def set_transformer(self, transformer: Transformer):
         self.transformer = transformer
         return self
@@ -35,7 +48,14 @@ class DataPipelineBuilder:
         self.sender = sender
         return self
 
+    def set_name(self, name: str):
+        self.name = name
+        return self
+
     def build(self) -> DataPipeline:
         return DataPipeline(
-            transformer=self.transformer, extractor=self.extractor, sender=self.sender
+            transformer=self.transformer,
+            extractor=self.extractor,
+            sender=self.sender,
+            name=self.name,
         )

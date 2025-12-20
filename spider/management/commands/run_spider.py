@@ -72,6 +72,7 @@ class Command(BaseCommand):
             .set_extractor(standard_politics_ext)
             .set_transformer(standard_transfomer)
             .set_sender(test_channel_sender)
+            .set_name("standard_politics_pipeline")
             .build()
         )
         pipe_lines.append(standard_politics_pipeline)
@@ -81,10 +82,11 @@ class Command(BaseCommand):
             .set_extractor(star_politics_ext)
             .set_transformer(star_transformer)
             .set_sender(test_channel_sender)
+            .set_name("star_politics_pipeline")
             .build()
         )
         pipe_lines.append(star_politics_pipeline)
 
         for pipe_line in pipe_lines:
-            logger.info(f"Executing: {pipe_line}")
+            self.stdout.write(f"Executing: {pipe_line}")
             pipe_line.execute()
