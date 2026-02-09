@@ -1,6 +1,9 @@
+asgiref==3.11.0
 beautifulsoup4==4.12.3
 certifi==2024.8.30
 charset-normalizer==3.4.0
+Django==6.0
+djangorestframework==3.16.1
 feedparser==6.0.11
 greenlet==3.1.1
 idna==3.10
@@ -9,5 +12,6 @@ requests==2.32.3
 sgmllib3k==1.0.0
 soupsieve==2.6
 SQLAlchemy==2.0.36
+sqlparse==0.5.4
 typing_extensions==4.12.2
 urllib3==2.2.3
