@@ -9,7 +9,7 @@ shares the posts to a telegram channel.
 - **Django:** Web framework
 - **Beautiful soup:** Web scraping library
 
-## Feature Concepts
+## Featured Concepts
 
 - Object Oriented Programming (OOP)
 - Web scrapping
